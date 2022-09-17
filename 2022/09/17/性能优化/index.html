@@ -1,0 +1,469 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>性能优化 | 云无月のBlog</title><meta name="keywords" content="性能优化,懒加载,防抖节流,回流重绘,webpack,图片优化方式,精灵图"><meta name="author" content="云无月"><meta name="copyright" content="云无月"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="稍稍整理了那么一下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="性能优化">
+<meta property="og:url" content="https://zzrjack.github.io/2022/09/17/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="云无月のBlog">
+<meta property="og:description" content="稍稍整理了那么一下。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zzrjack.github.io/img/bg1.jpg">
+<meta property="article:published_time" content="2022-09-17T15:14:52.000Z">
+<meta property="article:modified_time" content="2022-09-17T16:19:56.990Z">
+<meta property="article:author" content="云无月">
+<meta property="article:tag" content="性能优化">
+<meta property="article:tag" content="懒加载,防抖节流,回流重绘">
+<meta property="article:tag" content="webpack">
+<meta property="article:tag" content="图片优化方式,精灵图">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zzrjack.github.io/img/bg1.jpg"><link rel="shortcut icon" href="/img/ku.png"><link rel="canonical" href="https://zzrjack.github.io/2022/09/17/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '性能优化',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-09-18 00:19:56'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"  media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/mouse.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://gcore.jsdelivr.net/gh/sviptzk/StaticFile_HEXO@latest/butterfly/css/macWhite.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/%E5%8D%97%E5%AE%AB.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">7</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group hide" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 文章</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/Message/"><i class="fa-fw fas fa-comment"></i><span> 留言</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/bg1.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">云无月のBlog</a></span><div id="he-plugin-simple"></div><div id="none_space"></div><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group hide" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 文章</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/Message/"><i class="fa-fw fas fa-comment"></i><span> 留言</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">性能优化</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-09-17T15:14:52.000Z" title="发表于 2022-09-17 23:14:52">2022-09-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-09-17T16:19:56.990Z" title="更新于 2022-09-18 00:19:56">2022-09-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/">面试题</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="性能优化"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="一、CDN"><a href="#一、CDN" class="headerlink" title="一、CDN"></a>一、CDN</h1><h2 id="1-CDN的概念"><a href="#1-CDN的概念" class="headerlink" title="1.CDN的概念"></a>1.CDN的概念</h2><p>内容分发网络。CDN是构建在现有网络基础之上的智能虚拟网络，依靠部署在各地的边缘服务器，通过中心平台的负载均衡、内容分发、调度等功能模块，使用户就近获取所需内容，降低网络拥塞，提高用户访问响应速度和命中率。CDN的关键技术主要有内容存储和分发技术。</p>
+<p>通俗易懂的解释：<br>通过IP访问实际资源时，如果CDN上并没有缓存资源，则会到源站请求资源，并缓存到CDN节点上，这样，用户下一次访问时，该CDN节点就会有对应资源的缓存了。</p>
+<hr>
+<h2 id="2-CDN的原理"><a href="#2-CDN的原理" class="headerlink" title="2.CDN的原理"></a>2.CDN的原理</h2><p>阿里云官网的例子，来简单介绍CDN的工作原理。</p>
+<p>假设通过CDN加速的域名为<code>www.a.com</code>，接入CDN网络，开始使用加速服务后，当终端用户（北京）发起HTTP请求时，处理流程如下：</p>
+<p>1.当终端用户（北京）向<code>www.a.com</code>下的指定资源发起请求时，首先向LDNS（本地DNS）发起域名解析请求。</p>
+<p>2.LDNS检查缓存中是否有<code>www.a.com</code>的IP地址记录。如果有，则直接返回给终端用户；如果没有，则向授权DNS查询。</p>
+<p>3.当授权DNS解析<code>www.a.com</code>时，返回域名<code>CNAME www.a.tbcdn.com</code>对应IP地址。</p>
+<p>4.域名解析请求发送至阿里云DNS调度系统，并为请求分配最佳节点IP地址。</p>
+<p>5.LDNS获取DNS返回的解析IP地址。</p>
+<p>6.用户获取解析IP地址。</p>
+<p>7.用户向获取的IP地址发起对该资源的访问请求。</p>
+<p>8.如果该IP地址对应的节点已缓存该资源，则会将数据直接返回给用户，例如，图中步骤7和8，请求结束。</p>
+<p>9.如果该IP地址对应的节点未缓存该资源，则节点向源站发起对该资源的请求。获取资源后，结合用户自定义配置的缓存策略，将资源缓存至节点，例如，图中的北京节点，并返回给用户，请求结束。</p>
+<p>从这个例子可以了解到：</p>
+<p>1.CDN的加速资源是跟域名绑定的。<br>2.通过域名访问资源，首先是通过DNS分查找离用户最近的CDN节点（边缘服务器）的IP<br>3.通过IP访问实际资源时，如果CDN上并没有缓存资源，则会到源站请求资源，并缓存到CDN节点上，这样，用户下一次访问时，该CDN节点就会有对应资源的缓存了。</p>
+<img src="/2022/09/17/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/56365b6ea4c04dddb86b9295bc7c1163.png" class="">
+
+
+<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>CDN网络则是在用户和服务器之间增加缓存层，将用户的访问请求引导到最优的缓存节点而不是服务器源站点，从而加速访问速度。</p>
+<img src="/2022/09/17/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/3bafcf0a47d94e0da179148f97218af9.png" class="">
+
+<hr>
+<h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><ol>
+<li>网站站点&#x2F;应用加速</li>
+<li>视音频点播&#x2F;大文件下载分发加速</li>
+<li>视频直播加速</li>
+<li>移动应用加速</li>
+</ol>
+<hr>
+<h1 id="二、懒加载"><a href="#二、懒加载" class="headerlink" title="二、懒加载"></a>二、懒加载</h1><h2 id="1-懒加载实现原理"><a href="#1-懒加载实现原理" class="headerlink" title="1.懒加载实现原理"></a>1.懒加载实现原理</h2><p>一张图片就是一个<code>&lt;img&gt;</code>标签，浏览器是否发起请求图片是根据<code>&lt;img&gt;</code>的src属性，所以实现懒加载的关键就是，在图片没有进入可视区域时，先不给<code>&lt;img&gt;</code>的src赋值，这样浏览器就不会发送请求了，等到图片进入可视区域再给src赋值。</p>
+<p>实现懒加载有四个步骤，如下：<br>1.加载loading图片<br>2.<strong>判断哪些图片要加载</strong> <em>重点!</em><br>3.隐形加载图片<br>4.替换真图片</p>
+<img src="/2022/09/17/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/20190524164645631.png" class="">
+
+<p>如上图所示，让在浏览器可视区域的图片显示，可视区域外的不显示，所以当图片距离顶部的距离top-height等于可视区域h和滚动区域高度s之和时说明图片马上就要进入可视区了，就是说当top-height&lt;&#x3D;s+h时，图片在可视区。<br>这里介绍下几个API函数：</p>
+<ul>
+<li>页可见区域宽： document.body.clientWidth;</li>
+<li>网页可见区域高： document.body.clientHeight;</li>
+<li>网页可见区域宽： document.body.offsetWidth (包括边线的宽);</li>
+<li>网页可见区域高： document.body.offsetHeight (包括边线的宽);</li>
+<li>网页正文全文宽： document.body.scrollWidth;</li>
+<li>网页正文全文高： document.body.scrollHeight;</li>
+<li>网页被卷去的高： document.body.scrollTop;</li>
+<li>网页被卷去的左： document.body.scrollLeft;</li>
+<li>网页正文部分上： window.screenTop;</li>
+<li>网页正文部分左： window.screenLeft;</li>
+<li>屏幕分辨率的高： window.screen.height;</li>
+<li>屏幕分辨率的宽： window.screen.width;</li>
+<li>屏幕可用工作区高度： window.screen.availHeight;</li>
+</ul>
+<img src="/2022/09/17/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/b2af1c682cbe4b58a83236ef899c459e.png" class="">
+<p>HTMLElement.offsetTop 为只读属性，它返回当前元素相对于其 offsetParent 元素的顶部的距离。<br>window.innerHeight：浏览器窗口的视口（viewport）高度（以像素为单位）；如果有水平滚动条，也包括滚动条高度。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// onload是等所有的资源文件加载完毕以后再绑定事件</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="property">onload</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">	<span class="comment">// 获取图片列表，即img标签列表</span></span><br><span class="line">	<span class="keyword">var</span> imgs = <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;img&#x27;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 获取到浏览器顶部的距离</span></span><br><span class="line">	<span class="keyword">function</span> <span class="title function_">getTop</span>(<span class="params">e</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> e.<span class="property">offsetTop</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 懒加载实现</span></span><br><span class="line">	<span class="keyword">function</span> <span class="title function_">lazyload</span>(<span class="params">imgs</span>)&#123;</span><br><span class="line">		<span class="comment">// 可视区域高度</span></span><br><span class="line">		<span class="keyword">var</span> h = <span class="variable language_">window</span>.<span class="property">innerHeight</span>;</span><br><span class="line">		<span class="comment">//滚动区域高度</span></span><br><span class="line">		<span class="keyword">var</span> s = <span class="variable language_">document</span>.<span class="property">documentElement</span>.<span class="property">scrollTop</span> || <span class="variable language_">document</span>.<span class="property">body</span>.<span class="property">scrollTop</span>;</span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>;i&lt;imgs.<span class="property">length</span>;i++)&#123;</span><br><span class="line">			<span class="comment">//当内容的偏移量+视口高度&gt;图片距离内容顶部的偏移量时，说明图片在视口内</span></span><br><span class="line">			<span class="keyword">if</span> ((h+s)&gt;<span class="title function_">getTop</span>(imgs[i])) &#123;</span><br><span class="line">				<span class="comment">// 真实情况是页面开始有2秒空白，所以使用setTimeout定时2s</span></span><br><span class="line">				(<span class="keyword">function</span>(<span class="params">i</span>)&#123;</span><br><span class="line">					<span class="built_in">setTimeout</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">						<span class="comment">// 不加立即执行函数i会等于9</span></span><br><span class="line">						<span class="comment">// 隐形加载图片或其他资源，</span></span><br><span class="line">						<span class="comment">//创建一个临时图片，这个图片在内存中不会到页面上去。实现隐形加载</span></span><br><span class="line">						<span class="keyword">var</span> temp = <span class="keyword">new</span> <span class="title class_">Image</span>();</span><br><span class="line">						temp.<span class="property">src</span> = imgs[i].<span class="title function_">getAttribute</span>(<span class="string">&#x27;data-src&#x27;</span>);<span class="comment">//只会请求一次</span></span><br><span class="line">						<span class="comment">// onload判断图片加载完毕，真是图片加载完毕，再赋值给dom节点</span></span><br><span class="line">						temp.<span class="property">onload</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">							<span class="comment">// 获取自定义属性data-src，用真图片替换假图片</span></span><br><span class="line">							imgs[i].<span class="property">src</span> = imgs[i].<span class="title function_">getAttribute</span>(<span class="string">&#x27;data-src&#x27;</span>)</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;,<span class="number">2000</span>)</span><br><span class="line">				&#125;)(i)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="title function_">lazyload</span>(imgs);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 滚屏函数</span></span><br><span class="line">	<span class="variable language_">window</span>.<span class="property">onscroll</span> =<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">		<span class="title function_">lazyload</span>(imgs);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="2-懒加载的概念"><a href="#2-懒加载的概念" class="headerlink" title="2.懒加载的概念"></a>2.懒加载的概念</h2><p>&#x2F;&#x2F;懒加载方式减轻服务器的压力，优先加载可视区域的内容，其他部分等进入了可视区域再加载，从而提高性能。</p>
+<p>懒加载 (Load On Demand)是一种<strong>独特而又强大的数据获取方法</strong>,它能够在用户滚动页面的时候自动获取更多的数据,而新得到的数据不会影响原有数据的显示,同时最大程度上减少服务器端的资源耗用。</p>
+<hr>
+<h2 id="3-懒加载与预加载的区别"><a href="#3-懒加载与预加载的区别" class="headerlink" title="3.懒加载与预加载的区别"></a>3.懒加载与预加载的区别</h2><p>延迟加载图片，达到加载条件时再加载。<br>原理：img的src属性初始不放置实际需要的链接，而是存在data-url属性中，达到某条件后再动态充值src属性值为data-url里的链接地址，实现懒加载。</p>
+<p>作用：减轻服务器压力，节约流量，页面加载速度快。</p>
+<p>预加载：<br>提前加载图片，当用户需要查看时是直接从浏览器缓存里取的资源，用户操作体验速度快。<br>原理：在浏览器加载页面时创建image对象并赋值src链接<br>作用：让用户有快速的冲浪体验。<br>缺点：增加服务器压力，首页加载渲染时间长。<br>区别： 懒加载与预加载都有提高用于体验效果，但是优化体验效果的出发点不同，<strong>懒加载可以减轻服务器压力，但是预加载会增加服务器压力；</strong></p>
+<hr>
+<h1 id="三、节流与防抖"><a href="#三、节流与防抖" class="headerlink" title="三、节流与防抖"></a>三、节流与防抖</h1><h2 id="1-对节流防抖的理解"><a href="#1-对节流防抖的理解" class="headerlink" title="1.对节流防抖的理解"></a>1.对节流防抖的理解</h2><p>在事件被触发n秒后再执行回调，如果在这n秒内又被触发，则重新计时。</p>
+<ul>
+<li>函数防抖和函数节流都是防止某一时间频繁触发，但是这两兄弟之间的原理却不一样。</li>
+<li>函数防抖是某一段时间内只执行一次。当你在频繁的输入时，并不会发送请求，只有当你在指定间隔内没有输入时，才会执行函数。如果停止输入但是在指定间隔内又输入，会重新触发计时。 会被打断重新读条。</li>
+<li>而函数节流是间隔时间执行。不管我们设定的执行时间间隔多小，设定时间内只执行一次。个人理解 函数节流就是fps游戏的射速，就算一直按着鼠标射击，也只会在规定射速内射出子弹。</li>
+</ul>
+<hr>
+<h2 id="2-实现节流函数、防抖函数"><a href="#2-实现节流函数、防抖函数" class="headerlink" title="2.实现节流函数、防抖函数"></a>2.实现节流函数、防抖函数</h2><p>防抖：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建一个防抖函数debounce</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">debounce</span>(<span class="params">fn, delay</span>) &#123;</span><br><span class="line">  <span class="comment">// 1.定义一个定时器, 保存上一次的定时器</span></span><br><span class="line">  <span class="keyword">let</span> timer = <span class="literal">null</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 2.真正执行的函数</span></span><br><span class="line">  <span class="keyword">const</span> _debounce = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="comment">// 取消上一次的定时器</span></span><br><span class="line">    <span class="keyword">if</span> (timer) <span class="built_in">clearTimeout</span>(timer)</span><br><span class="line">    <span class="comment">// 延迟执行</span></span><br><span class="line">    timer = <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="comment">// 外部传入的真正要执行的函数</span></span><br><span class="line">      <span class="title function_">fn</span>()</span><br><span class="line">    &#125;, delay)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> _debounce</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//实现方法二</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">* fn [function] 需要防抖的函数</span></span><br><span class="line"><span class="comment">* delay [number] 毫秒，防抖期限值</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">debounce</span>(<span class="params">fn,delay</span>)&#123;</span><br><span class="line">    <span class="keyword">let</span> timer = <span class="literal">null</span> <span class="comment">//借助闭包return function() &#123;</span></span><br><span class="line">        <span class="keyword">if</span>(timer)&#123;</span><br><span class="line">            <span class="built_in">clearTimeout</span>(timer) <span class="comment">//进入该分支语句，说明当前正在一个计时过程中，并且又触发了相同事件。所以要取消当前的计时，重新开始计时</span></span><br><span class="line">            timer = <span class="built_in">setTimeout</span>(fn,delay) </span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            timer = <span class="built_in">setTimeout</span>(fn,delay) <span class="comment">// 进入该分支说明当前并没有在计时，那么就开始一个计时</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>节流：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">throttle</span>(<span class="params">fn, interval</span>) &#123;</span><br><span class="line">  <span class="comment">// 1.记录上一次的开始时间</span></span><br><span class="line">  <span class="keyword">let</span> lastTime = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 2.事件触发时, 真正执行的函数</span></span><br><span class="line">  <span class="keyword">const</span> _throttle = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="comment">// 2.1.获取当前事件触发时的时间</span></span><br><span class="line">    <span class="keyword">const</span> nowTime = <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTime</span>()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2.2.使用当前触发的时间和之前的时间间隔以及上一次开始的时间, 计算出还剩余多长事件需要去触发函数</span></span><br><span class="line">    <span class="keyword">const</span> remainTime = interval - (nowTime - lastTime)</span><br><span class="line">    <span class="keyword">if</span> (remainTime &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="comment">// 2.3.真正触发函数</span></span><br><span class="line">      <span class="title function_">fn</span>()</span><br><span class="line">      <span class="comment">// 2.4.保留上次触发的时间</span></span><br><span class="line">      lastTime = nowTime</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> _throttle</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//实现方法二</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@desc</span> 函数节流</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> fn 函数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> wait 延迟执行毫秒数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> type 1 表时间戳版，2 表定时器版</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">const</span> throttle = <span class="keyword">function</span> (<span class="params">fn, wait, type</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (type === <span class="number">1</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> preTime = <span class="number">0</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">      <span class="keyword">let</span> context = <span class="variable language_">this</span></span><br><span class="line">      <span class="keyword">let</span> args = <span class="variable language_">arguments</span></span><br><span class="line">      <span class="keyword">let</span> nowTime = <span class="keyword">new</span> <span class="title class_">Date</span>()</span><br><span class="line">      <span class="keyword">if</span> (nowTime - preTime &gt; wait) &#123;</span><br><span class="line">        preTime = nowTime</span><br><span class="line">        fn.<span class="title function_">apply</span>(context, args)</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br><span class="line"> &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> timer = <span class="literal">null</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">      <span class="keyword">let</span> context = <span class="variable language_">this</span></span><br><span class="line">      <span class="keyword">let</span> args = <span class="variable language_">arguments</span></span><br><span class="line">      <span class="keyword">if</span> (!timer) &#123;</span><br><span class="line">        <span class="comment">// 当延迟时间结束后，执行函数</span></span><br><span class="line">        timer = <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">          timer = <span class="literal">null</span></span><br><span class="line">          fn.<span class="title function_">apply</span>(context, args)</span><br><span class="line">       &#125;, wait)</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="四、回流与重绘"><a href="#四、回流与重绘" class="headerlink" title="四、回流与重绘"></a>四、回流与重绘</h1><h2 id="1-回流与重绘的概念以及触发条件"><a href="#1-回流与重绘的概念以及触发条件" class="headerlink" title="1.回流与重绘的概念以及触发条件"></a>1.回流与重绘的概念以及触发条件</h2><p>1、回流（reflow）<br>有时也叫做重排或者布局（layout）。通过构造渲染树，将可见DOM节点以及它对应的样式结合起来，可是还需要计算它们在页面内的确切位置和大小，这个计算的阶段就是回流。</p>
+<p>或者说：当render tree中的一部分(或全部)因为元素的规模尺寸，布局，隐藏等改变而需要重新构建，这就称为回流(reflow)。<br>当页面布局或者元素的几何属性需要改变时会引起回流<br>布局是浏览器计算各元素几何信息的过程：元素的大小以及在页面中的位置。 根据所用的 CSS、元素的内容或父级元素，每个元素都将有显式或隐含的大小信息。此过程在 Chrome、Opera、Safari 和 Internet Explorer 中称为布局 (Layout)。 在 Firefox 中称为自动重排 (Reflow)，但实际上其过程是一样的。</p>
+<p>2、重绘（repaint）<br>通过构造渲染树和回流阶段，知道了哪些节点是可见的，以及可见节点的样式和具体的几何信息(位置、大小)，那么我们就可以将渲染树的每个节点都转换为屏幕上的实际像素，这个阶段就叫做重绘节点。</p>
+<p>重绘是当节点需要更改外观而不会影响布局的，比如改变 color 就会引起重绘。</p>
+<p><strong>触发条件：</strong><br><strong>回流必定会发生重绘</strong>，<strong>重绘不一定会引发回流</strong>。 回流所需的成本比重绘高的多，改变深层次的节点很可能导致父节点的一系列回流。</p>
+<p>（1）回流</p>
+<p>当页面布局或者元素的几何属性（位置和大小）需要改变时会引起回流。比如以下情况：</p>
+<p>页面首次渲染的时候<br>添加或删除可见的DOM元素<br>元素的位置发生变化<br>元素的尺寸发生变化（包括外边距、内边框、边框大小、高度和宽度等）<br>内容发生变化，比如文本变化（文字大小、行高发生变化）或图片被另一个不同尺寸的图片所替代。<br>浏览器的窗口尺寸变化（因为回流是根据视口的大小来计算元素的位置和大小的）</p>
+<p>（2）重绘</p>
+<p>当render tree中的一些元素需要更新属性，而这些属性只是影响元素的外观，风格，而不会影响布局的，比如background-color，会引起重绘。</p>
+<hr>
+<h2 id="2-如何避免回流与重绘"><a href="#2-如何避免回流与重绘" class="headerlink" title="2.如何避免回流与重绘"></a>2.如何避免回流与重绘</h2><ol>
+<li><p>使用 translate 代替 top 改变 。</p>
+<p>​	top 会触发 layout 的过程, 但 translate 不会 。</p>
+</li>
+<li><p>使用 opacity 代替 visibility 。</p>
+<p>​	visibility 会触发重绘, 但 opacity 不会触发重绘 。</p>
+</li>
+<li><p>不要一条一条的修改 DOM 的样式, 预先定义好 class, 然后修改 DOM 的 className 。</p>
+<p>​	因为每修改一条样式, 都会触发重绘, 所以我们把要修改的 dom 样式都定义在一个 className 中, 一次性完成。</p>
+</li>
+<li><p>把 DOM 离线后修改, 比如: 先把 DOM 给 display: none (有一次 reflow 回流), 然后你修改一百次, 然后再把它显示出来 </p>
+</li>
+<li><p>不要把 DOM 节点的属性值, 放在循环里当成循环量的变量 。</p>
+<p>​	回流中的缓冲机制 。</p>
+</li>
+<li><p>不要使用 table 布局, 可能很小的一个小改动会造成整个 table 重新布局 。</p>
+<p>​	尽量使用 div 布局, 它只会影响它后面的布局不会影响它前面的布局, 但是 table 可能会影响它前面的布局 。</p>
+</li>
+<li><p>动画实现的速度的选择 。</p>
+<p>​	影响 JS 的执行 。</p>
+</li>
+<li><p>对于动画新建图层 。</p>
+<p>​	video 、 canvas 。</p>
+</li>
+<li><p>启用 GPU 硬件加速 。</p>
+<p>​	使用 translate 等 会使用 GPU (数据从 CPU 传输到 GPU, 才能渲染)。</p>
+</li>
+</ol>
+<hr>
+<h1 id="五、图片优化"><a href="#五、图片优化" class="headerlink" title="五、图片优化"></a>五、图片优化</h1><h2 id="1-如何对项目中的图片进行优化"><a href="#1-如何对项目中的图片进行优化" class="headerlink" title="1.如何对项目中的图片进行优化"></a>1.如何对项目中的图片进行优化</h2><p>①降低图片的大小</p>
+<p>我们的目的是降低图片的大小kb，有很多方法可以做，压缩图片，选择更小kb的图片格式，以达到最优的显示效果,找在线压缩图的网站如TinyPNG:一个压缩PNG的神站</p>
+<p>选择适当的图片宽度尺寸（即响应式图片）</p>
+<p>②<strong>减少HTTP的网络资源请求 考虑CSSSprites(背景精灵图&#x2F;雪碧图)</strong></p>
+<p>怎么使用精灵图？</p>
+<p>利用CSS的background-image，background- repeat，background-position的组合进行背景定位，background-position可以用数字精确的定位出背景图片的位置</p>
+<p>③<strong>css和css3&#96;制作简单的图标和动画（代替gif图片）</strong></p>
+<p>随着技术的发展，css3可以实现的效果越来越多，比如箭头图标，三角形，梯形等图标，或者一些阴影效果，渐变的效果，所以可以用css制作一些简单的图标，而且具有多变性</p>
+<p>④<strong>SVG技术替换图片</strong></p>
+<p>SVG 是使用 XML 来描述二维图形和绘图程序的语言,支持透明，缩放，动画</p>
+<p>什么是SVG？(摘自w3cschool)</p>
+<p>SVG 指可伸缩矢量图形 (Scalable Vector Graphics)</p>
+<p>⑤字体图库代替图标</p>
+<p>随着技术的更新和浏览器的更新，字体图库去代替一些图标我认为还是极好的，使用字体图库你不仅可以改变大小，而且还可以改变颜色</p>
+<p>图片延迟加载（懒惰加载）（js&#x2F;lazyload.js）</p>
+<p>有个页面会很大很长很多的图片素材，这样全部加载就会变的很慢，因此需要修改一下加载方案，只加载窗口内的图片，我们大家浏览网站的时候会经常看到会有默认图，图片加载成功之后会替换默认图</p>
+<hr>
+<h2 id="2-常见的图片格式以及使用场景"><a href="#2-常见的图片格式以及使用场景" class="headerlink" title="2.常见的图片格式以及使用场景"></a>2.常见的图片格式以及使用场景</h2><table>
+<thead>
+<tr>
+<th align="left">格式</th>
+<th>优点</th>
+<th>缺点</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">GIF</td>
+<td>文件小，支持动画、透明，无兼容性问题</td>
+<td>只支持256种颜色</td>
+<td>色彩简单的logo、icon、动图</td>
+</tr>
+<tr>
+<td align="left">JPG</td>
+<td>色彩丰富，文件小</td>
+<td>有损压缩，反复保存图片质量下降明显</td>
+<td>色彩丰富的图片&#x2F;渐变图像</td>
+</tr>
+<tr>
+<td align="left">PNG</td>
+<td>无损压缩，支持透明，简单图片尺寸小</td>
+<td>不支持动画，色彩丰富的图片尺寸大</td>
+<td>logo&#x2F;icon&#x2F;透明图</td>
+</tr>
+<tr>
+<td align="left">WEBP</td>
+<td>文件小，支持有损和无损压缩，支持动画、透明</td>
+<td>浏览器兼容性不好</td>
+<td>支持WEBP格式的app和webview</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="六、webpack优化"><a href="#六、webpack优化" class="headerlink" title="六、webpack优化"></a>六、webpack优化</h1><h2 id="1-如何用webpack优化前端性能"><a href="#1-如何用webpack优化前端性能" class="headerlink" title="1.如何用webpack优化前端性能"></a>1.如何用webpack优化前端性能</h2><h3 id="JS代码压缩"><a href="#JS代码压缩" class="headerlink" title="JS代码压缩"></a><strong>JS代码压缩</strong></h3><p>terser是一个JavaScript的解释、绞肉机、压缩机的工具集，可以帮助我们压缩、丑化我们的代码，让bundle更小</p>
+<p>在production模式下，webpack 默认就是使用 TerserPlugin 来处理我们的代码的。如果想要自定义配置它，配置方法如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">TerserPlugin</span> = <span class="built_in">require</span>(<span class="string">&#x27;terser-webpack-plugin&#x27;</span>)</span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="attr">optimization</span>: &#123;</span><br><span class="line">        <span class="attr">minimize</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">minimizer</span>: [</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">TerserPlugin</span>(&#123;</span><br><span class="line">                <span class="attr">parallel</span>: <span class="literal">true</span> <span class="comment">// 电脑cpu核数-1</span></span><br><span class="line">            &#125;)</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>属性介绍如下：</p>
+<p>extractComments：默认值为true，表示会将注释抽取到一个单独的文件中，开发阶段，我们可设置为 false ，不保留注释</p>
+<p>parallel：使用多进程并发运行提高构建的速度，默认值是true，并发运行的默认数量：os.cpus().length - 1</p>
+<p>terserOptions：设置我们的terser相关的配置：</p>
+<p>compress：设置压缩相关的选项，</p>
+<p>mangle：设置丑化相关的选项，可以直接设置为true</p>
+<p>toplevel：底层变量是否进行转换</p>
+<p>keep_classnames：保留类的名称</p>
+<p>keep_fnames：保留函数的名称</p>
+<hr>
+<h3 id="CSS代码压缩"><a href="#CSS代码压缩" class="headerlink" title="CSS代码压缩"></a><strong>CSS代码压缩</strong></h3><p>CSS压缩通常是去除无用的空格等，因为很难去修改选择器、属性的名称、值等</p>
+<p>CSS的压缩我们可以使用另外一个插件：css-minimizer-webpack-plugin</p>
+<p>npm install css-minimizer-webpack-plugin -D<br>配置方法如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">CssMinimizerPlugin</span> = <span class="built_in">require</span>(<span class="string">&#x27;css-minimizer-webpack-plugin&#x27;</span>)</span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="attr">optimization</span>: &#123;</span><br><span class="line">        <span class="attr">minimize</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">minimizer</span>: [</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">CssMinimizerPlugin</span>(&#123;</span><br><span class="line">                <span class="attr">parallel</span>: <span class="literal">true</span></span><br><span class="line">            &#125;)</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="Html文件代码压缩"><a href="#Html文件代码压缩" class="headerlink" title="Html文件代码压缩"></a><strong>Html文件代码压缩</strong></h3><p>使用HtmlWebpackPlugin插件来生成HTML的模板时候，通过配置属性minify进行html优化</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="attr">plugin</span>:[</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">HtmlwebpackPlugin</span>(&#123;</span><br><span class="line">            ...</span><br><span class="line">            <span class="attr">minify</span>:&#123;</span><br><span class="line">                <span class="attr">minifyCSS</span>:<span class="literal">false</span>, <span class="comment">// 是否压缩css</span></span><br><span class="line">                <span class="attr">collapseWhitespace</span>:<span class="literal">false</span>, <span class="comment">// 是否折叠空格</span></span><br><span class="line">                <span class="attr">removeComments</span>:<span class="literal">true</span> <span class="comment">// 是否移除注释</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>设置了minify，实际会使用另一个插件html-minifier-terser</p>
+<hr>
+<h3 id="文件大小压缩"><a href="#文件大小压缩" class="headerlink" title="文件大小压缩"></a><strong>文件大小压缩</strong></h3><p>对文件的大小进行压缩，减少http传输过程中宽带的损耗</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">npm install compression-webpack-plugin -D</span><br><span class="line"><span class="keyword">new</span> <span class="title class_">ComepressionPlugin</span>(&#123;</span><br><span class="line">    <span class="attr">test</span>:<span class="regexp">/\.(css|js)$/</span>,  <span class="comment">// 哪些文件需要压缩</span></span><br><span class="line">    <span class="attr">threshold</span>:<span class="number">500</span>, <span class="comment">// 设置文件多大开始压缩</span></span><br><span class="line">    <span class="attr">minRatio</span>:<span class="number">0.7</span>, <span class="comment">// 至少压缩的比例</span></span><br><span class="line">    <span class="attr">algorithm</span>:<span class="string">&quot;gzip&quot;</span>, <span class="comment">// 采用的压缩算法</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="图片压缩"><a href="#图片压缩" class="headerlink" title="图片压缩"></a><strong>图片压缩</strong></h3><p>一般来说在打包之后，一些图片文件的大小是远远要比 js 或者 css 文件要来的大，所以图片压缩较为重要</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">module</span>: &#123;</span><br><span class="line">  <span class="attr">rules</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">test</span>: <span class="regexp">/\.(png|jpg|gif)$/</span>,</span><br><span class="line">      <span class="attr">use</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">loader</span>: <span class="string">&#x27;file-loader&#x27;</span>,</span><br><span class="line">          <span class="attr">options</span>: &#123;</span><br><span class="line">            <span class="attr">name</span>: <span class="string">&#x27;[name]_[hash].[ext]&#x27;</span>,</span><br><span class="line">            <span class="attr">outputPath</span>: <span class="string">&#x27;images/&#x27;</span>,</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">loader</span>: <span class="string">&#x27;image-webpack-loader&#x27;</span>,</span><br><span class="line">          <span class="attr">options</span>: &#123;</span><br><span class="line">            <span class="comment">// 压缩 jpeg 的配置</span></span><br><span class="line">            <span class="attr">mozjpeg</span>: &#123;</span><br><span class="line">              <span class="attr">progressive</span>: <span class="literal">true</span>,</span><br><span class="line">              <span class="attr">quality</span>: <span class="number">65</span></span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="comment">// 使用 imagemin**-optipng 压缩 png，enable: false 为关闭</span></span><br><span class="line">            <span class="attr">optipng</span>: &#123;</span><br><span class="line">              <span class="attr">enabled</span>: <span class="literal">false</span>,</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="comment">// 使用 imagemin-pngquant 压缩 png</span></span><br><span class="line">            <span class="attr">pngquant</span>: &#123;</span><br><span class="line">              <span class="attr">quality</span>: <span class="string">&#x27;65-90&#x27;</span>,</span><br><span class="line">              <span class="attr">speed</span>: <span class="number">4</span></span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="comment">// 压缩 gif 的配置</span></span><br><span class="line">            <span class="attr">gifsicle</span>: &#123;</span><br><span class="line">              <span class="attr">interlaced</span>: <span class="literal">false</span>,</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="comment">// 开启 webp，会把 jpg 和 png 图片压缩为 webp 格式</span></span><br><span class="line">            <span class="attr">webp</span>: &#123;</span><br><span class="line">              <span class="attr">quality</span>: <span class="number">75</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;,</span><br><span class="line">  ]</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="Tree-Shaking"><a href="#Tree-Shaking" class="headerlink" title="Tree Shaking"></a><strong>Tree Shaking</strong></h3><p>Tree Shaking 是一个术语，在计算机中表示消除死代码，依赖于ES Module的静态语法分析（不执行任何的代码，可以明确知道模块的依赖关系）</p>
+<p>在webpack实现Trss shaking有两种不同的方案：</p>
+<p>usedExports：通过标记某些函数是否被使用，之后通过Terser来进行优化的</p>
+<p>sideEffects：跳过整个模块&#x2F;文件，直接查看该文件是否有副作用</p>
+<p>两种不同的配置方案， 有不同的效果</p>
+<p>usedExports<br>配置方法也很简单，只需要将usedExports设为true</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="attr">optimization</span>:&#123;</span><br><span class="line">        usedExports</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>使用之后，没被用上的代码在webpack打包中会加入unused harmony export mul注释，用来告知 Terser 在优化时，可以删除掉这段代码</p>
+<p>如下面sum函数没被用到，webpack打包会添加注释，terser在优化时，则将该函数去掉</p>
+<p>sideEffects<br>sideEffects用于告知webpack compiler哪些模块时有副作用，配置方法是在package.json中设置sideEffects属性</p>
+<p>如果sideEffects设置为false，就是告知webpack可以安全的删除未用到的exports</p>
+<p>如果有些文件需要保留，可以设置为数组的形式</p>
+<p>“sideEffecis”:[<br>    “.&#x2F;src&#x2F;util&#x2F;format.js”,<br>    “*.css” &#x2F;&#x2F; 所有的css文件<br>]<br>上述都是关于javascript的tree shaking，css同样也能够实现tree shaking</p>
+<hr>
+<h3 id="css-tree-shaking"><a href="#css-tree-shaking" class="headerlink" title="css tree shaking"></a><strong>css tree shaking</strong></h3><p>css进行tree shaking优化可以安装PurgeCss插件</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">npm install purgecss-plugin-webpack -D</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">PurgeCssPlugin</span> = <span class="built_in">require</span>(<span class="string">&#x27;purgecss-webpack-plugin&#x27;</span>)</span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="attr">plugins</span>:[</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">PurgeCssPlugin</span>(&#123;</span><br><span class="line">            <span class="attr">path</span>:glob.<span class="title function_">sync</span>(<span class="string">`<span class="subst">$&#123;path.resolve(<span class="string">&#x27;./src&#x27;</span>)&#125;</span>/**/*`</span>), &#123;<span class="attr">nodir</span>:<span class="literal">true</span>&#125;<span class="comment">// src里面的所有文件</span></span><br><span class="line">            <span class="attr">satelist</span>:<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">                <span class="keyword">return</span> &#123;</span><br><span class="line">                    <span class="attr">standard</span>:[<span class="string">&quot;html&quot;</span>]</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>paths：表示要检测哪些目录下的内容需要被分析，配合使用glob</p>
+<p>默认情况下，Purgecss会将我们的html标签的样式移除掉，如果我们希望保留，可以添加一个safelist的属性</p>
+<hr>
+<h3 id="代码分离"><a href="#代码分离" class="headerlink" title="代码分离"></a><strong>代码分离</strong></h3><p>将代码分离到不同的bundle中，之后我们可以按需加载，或者并行加载这些文件</p>
+<p>默认情况下，所有的JavaScript代码（业务代码、第三方依赖、暂时没有用到的模块）在首页全部都加载，就会影响首页的加载速度</p>
+<p>代码分离可以分出出更小的bundle，以及控制资源加载优先级，提供代码的加载性能</p>
+<p>这里通过splitChunksPlugin来实现，该插件webpack已经默认安装和集成，只需要配置即可</p>
+<p>默认配置中，chunks仅仅针对于异步（async）请求，我们可以设置为initial或者all</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="attr">optimization</span>:&#123;</span><br><span class="line">        <span class="attr">splitChunks</span>:&#123;</span><br><span class="line">            <span class="attr">chunks</span>:<span class="string">&quot;all&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>splitChunks主要属性有如下：</p>
+<p>Chunks，对同步代码还是异步代码进行处理</p>
+<p>minSize：拆分包的大小, 至少为minSize，如何包的大小不超过minSize，这个包不会拆分</p>
+<p>maxSize：将大于maxSize的包，拆分为不小于minSize的包</p>
+<p>minChunks：被引入的次数，默认是1</p>
+<hr>
+<h3 id="内联chunk"><a href="#内联chunk" class="headerlink" title="内联chunk"></a><strong>内联chunk</strong></h3><p>可以通过InlineChunkHtmlPlugin插件将一些chunk的模块内联到html，如runtime的代码（对模块进行解析、加载、模块信息相关的代码），代码量并不大，但是必须加载的</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">InlineChunkHtmlPlugin</span> = <span class="built_in">require</span>(<span class="string">&#x27;react-dev-utils/InlineChunkHtmlPlugin&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">HtmlWebpackPlugin</span> = <span class="built_in">require</span>(<span class="string">&#x27;html-webpack-plugin&#x27;</span>)</span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="attr">plugin</span>:[</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">InlineChunkHtmlPlugin</span>(<span class="title class_">HtmlWebpackPlugin</span>,[<span class="regexp">/runtime.+\.js/</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>总结</strong><br>关于webpack对前端性能的优化，可以通过<strong>文件体积大小入手，其次还可通过分包的形式、减少http请求次数等方式，实现对前端性能的优化</strong></p>
+<hr>
+<h2 id="2-如何提高webpack的构建速度"><a href="#2-如何提高webpack的构建速度" class="headerlink" title="2.如何提高webpack的构建速度"></a>2.如何提高webpack的构建速度</h2><p>常见的提升构建速度的手段有如下：</p>
+<p>1.优化 loader 配置</p>
+<p>2.合理使用 resolve.extensions</p>
+<p>3.优化 resolve.modules</p>
+<p>4.优化 resolve.alias</p>
+<p>5.使用 DLLPlugin 插件</p>
+<p>6.使用 cache-loader</p>
+<p>7.terser 启动多线程</p>
+<p>8.合理使用 sourceMap</p>
+<hr>
+<h3 id="优化loader配置"><a href="#优化loader配置" class="headerlink" title="优化loader配置"></a><strong>优化loader配置</strong></h3><p>在使用loader时，可以通过配置include、exclude、test属性来匹配文件，接触include、exclude规定哪些匹配应用loader</p>
+<p>如采用 ES6 的项目为例，在配置 babel-loader时，可以这样：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="attr">module</span>: &#123;</span><br><span class="line">    <span class="attr">rules</span>: [</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="comment">// 如果项目源码中只有 js 文件就不要写成 /\.jsx?$/，提升正则表达式性能</span></span><br><span class="line">        <span class="attr">test</span>: <span class="regexp">/\.js$/</span>,</span><br><span class="line">        <span class="comment">// babel-loader 支持缓存转换出的结果，通过 cacheDirectory 选项开启</span></span><br><span class="line">        <span class="attr">use</span>: [<span class="string">&#x27;babel-loader?cacheDirectory&#x27;</span>],</span><br><span class="line">        <span class="comment">// 只对项目根目录下的 src 目录中的文件采用 babel-loader</span></span><br><span class="line">        <span class="attr">include</span>: path.<span class="title function_">resolve</span>(__dirname, <span class="string">&#x27;src&#x27;</span>),</span><br><span class="line">      &#125;,</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="合理使用-resolve-extensions"><a href="#合理使用-resolve-extensions" class="headerlink" title="合理使用 resolve.extensions"></a><strong>合理使用 resolve.extensions</strong></h3><p>在开发中我们会有各种各样的模块依赖，这些模块可能来自于自己编写的代码，也可能来自第三方库， resolve可以帮助webpack从每个 require&#x2F;import 语句中，找到需要引入到合适的模块代码</p>
+<p>通过resolve.extensions是解析到文件时自动添加拓展名，默认情况如下：</p>
+<p>module.exports &#x3D; {<br>    …<br>    extensions:[“.warm”,”.mjs”,”.js”,”.json”]<br>}<br>当我们引入文件的时候，若没有文件后缀名，则会根据数组内的值依次查找</p>
+<p>当我们配置的时候，则不要随便把所有后缀都写在里面，这会调用多次文件的查找，这样就会减慢打包速度</p>
+<hr>
+<h3 id="优化-resolve-modules"><a href="#优化-resolve-modules" class="headerlink" title="优化 resolve.modules"></a><strong>优化 resolve.modules</strong></h3><p>resolve.modules 用于配置 webpack 去哪些目录下寻找第三方模块。默认值为[‘node_modules’]，所以默认会从node_modules中查找文件 当安装的第三方模块都放在项目根目录下的 .&#x2F;node_modules目录下时，所以可以指明存放第三方模块的绝对路径，以减少寻找，配置如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="attr">resolve</span>: &#123;</span><br><span class="line">    <span class="comment">// 使用绝对路径指明第三方模块存放的位置，以减少搜索步骤</span></span><br><span class="line">    <span class="comment">// 其中 __dirname 表示当前工作目录，也就是项目根目录</span></span><br><span class="line">    <span class="attr">modules</span>: [path.<span class="title function_">resolve</span>(__dirname, <span class="string">&#x27;node_modules&#x27;</span>)]</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="优化-resolve-alias"><a href="#优化-resolve-alias" class="headerlink" title="优化 resolve.alias"></a><strong>优化 resolve.alias</strong></h3><p>alias给一些常用的路径起一个别名，特别当我们的项目目录结构比较深的时候，一个文件的路径可能是.&#x2F;..&#x2F;..&#x2F;的形式</p>
+<p>通过配置alias以减少查找过程</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="attr">resolve</span>:&#123;</span><br><span class="line">        <span class="attr">alias</span>:&#123;</span><br><span class="line">            <span class="string">&quot;@&quot;</span>:path.<span class="title function_">resolve</span>(__dirname,<span class="string">&#x27;./src&#x27;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用-DLLPlugin-插件"><a href="#使用-DLLPlugin-插件" class="headerlink" title="使用 DLLPlugin 插件"></a><strong>使用 DLLPlugin 插件</strong></h3><p>DLL全称是 动态链接库，是为软件在winodw中实现共享函数库的一种实现方式，而Webpack也内置了DLL的功能，为的就是可以共享，不经常改变的代码，抽成一个共享的库。这个库在之后的编译过程中，会被引入到其他项目的代码中</p>
+<p>使用步骤分成两部分：</p>
+<p>打包一个 DLL 库</p>
+<p>引入 DLL 库</p>
+<p>打包一个 DLL 库<br>webpack内置了一个DllPlugin可以帮助我们打包一个DLL的库文件</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="attr">plugins</span>:[</span><br><span class="line">        <span class="keyword">new</span> webpack.<span class="title class_">DllPlugin</span>(&#123;</span><br><span class="line">            <span class="attr">name</span>:<span class="string">&#x27;dll_[name]&#x27;</span>,</span><br><span class="line">            <span class="attr">path</span>:path.<span class="title function_">resolve</span>(__dirname,<span class="string">&quot;./dll/[name].mainfest.json&quot;</span>)</span><br><span class="line">        &#125;)</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>引入 DLL 库<br>使用 webpack 自带的 DllReferencePlugin 插件对 mainfest.json 映射文件进行分析，获取要使用的DLL库</p>
+<p>然后再通过AddAssetHtmlPlugin插件，将我们打包的DLL库引入到Html模块中</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">new</span> webpack.<span class="title class_">DllReferencePlugin</span>(&#123;</span><br><span class="line">        <span class="attr">context</span>:path.<span class="title function_">resolve</span>(__dirname,<span class="string">&quot;./dll/dll_react.js&quot;</span>),</span><br><span class="line">        <span class="attr">mainfest</span>:path.<span class="title function_">resolve</span>(__dirname,<span class="string">&quot;./dll/react.mainfest.json&quot;</span>)</span><br><span class="line">    &#125;),</span><br><span class="line">    <span class="keyword">new</span> <span class="title class_">AddAssetHtmlPlugin</span>(&#123;</span><br><span class="line">        <span class="attr">outputPath</span>:<span class="string">&quot;./auto&quot;</span>,</span><br><span class="line">        <span class="attr">filepath</span>:path.<span class="title function_">resolve</span>(__dirname,<span class="string">&quot;./dll/dll_react.js&quot;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用-cache-loader"><a href="#使用-cache-loader" class="headerlink" title="使用 cache-loader"></a><strong>使用 cache-loader</strong></h3><p>在一些性能开销较大的 loader之前添加 cache-loader，以将结果缓存到磁盘里，显著提升二次构建速度</p>
+<p>保存和读取这些缓存文件会有一些时间开销，所以请只对性能开销较大的 loader 使用此loader</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">    <span class="attr">module</span>: &#123;</span><br><span class="line">        <span class="attr">rules</span>: [</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">test</span>: <span class="regexp">/\.ext$/</span>,</span><br><span class="line">                <span class="attr">use</span>: [<span class="string">&#x27;cache-loader&#x27;</span>, ...loaders],</span><br><span class="line">                <span class="attr">include</span>: path.<span class="title function_">resolve</span>(<span class="string">&#x27;src&#x27;</span>),</span><br><span class="line">            &#125;,</span><br><span class="line">        ],</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="terser-启动多线程"><a href="#terser-启动多线程" class="headerlink" title="terser 启动多线程"></a><strong>terser 启动多线程</strong></h3><p><strong>使用多进程并行运行来提高构建速度</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="attr">optimization</span>: &#123;</span><br><span class="line">    <span class="attr">minimizer</span>: [</span><br><span class="line">      <span class="keyword">new</span> <span class="title class_">TerserPlugin</span>(&#123;</span><br><span class="line">        <span class="attr">parallel</span>: <span class="literal">true</span>,</span><br><span class="line">      &#125;),</span><br><span class="line">    ],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="合理使用-sourceMap"><a href="#合理使用-sourceMap" class="headerlink" title="合理使用 sourceMap"></a><strong>合理使用 sourceMap</strong></h3><p>打包生成  sourceMap 的时候，如果信息越详细，打包速度就会越慢。对应属性取值如下所示：</p>
+<p><strong>总结</strong><br>优化webpack构建的方式有很多，主要可以从优化搜索时间、缩小文件搜索范围、减少不必要的编译等方面入手</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://zzrjack.github.io">云无月</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://zzrjack.github.io/2022/09/17/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">https://zzrjack.github.io/2022/09/17/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://zzrjack.github.io" target="_blank">云无月のBlog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">性能优化</a><a class="post-meta__tags" href="/tags/%E6%87%92%E5%8A%A0%E8%BD%BD-%E9%98%B2%E6%8A%96%E8%8A%82%E6%B5%81-%E5%9B%9E%E6%B5%81%E9%87%8D%E7%BB%98/">懒加载,防抖节流,回流重绘</a><a class="post-meta__tags" href="/tags/webpack/">webpack</a><a class="post-meta__tags" href="/tags/%E5%9B%BE%E7%89%87%E4%BC%98%E5%8C%96%E6%96%B9%E5%BC%8F-%E7%B2%BE%E7%81%B5%E5%9B%BE/">图片优化方式,精灵图</a></div><div class="post_share"><div class="social-share" data-image="/img/bg1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2022/09/17/Vue/"><img class="next-cover" src="/img/bg1.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Vue</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/%E5%8D%97%E5%AE%AB.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">云无月</div><div class="author-info__description">喜忧参半之人</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">7</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/zzrjack" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:1220939105@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81CDN"><span class="toc-number">1.</span> <span class="toc-text">一、CDN</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-CDN%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="toc-number">1.1.</span> <span class="toc-text">1.CDN的概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-CDN%E7%9A%84%E5%8E%9F%E7%90%86"><span class="toc-number">1.2.</span> <span class="toc-text">2.CDN的原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8"><span class="toc-number">1.3.</span> <span class="toc-text">作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.4.</span> <span class="toc-text">应用场景</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%87%92%E5%8A%A0%E8%BD%BD"><span class="toc-number">2.</span> <span class="toc-text">二、懒加载</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%87%92%E5%8A%A0%E8%BD%BD%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">1.懒加载实现原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="toc-number">2.2.</span> <span class="toc-text">2.懒加载的概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%87%92%E5%8A%A0%E8%BD%BD%E4%B8%8E%E9%A2%84%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">2.3.</span> <span class="toc-text">3.懒加载与预加载的区别</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E8%8A%82%E6%B5%81%E4%B8%8E%E9%98%B2%E6%8A%96"><span class="toc-number">3.</span> <span class="toc-text">三、节流与防抖</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%AF%B9%E8%8A%82%E6%B5%81%E9%98%B2%E6%8A%96%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-number">3.1.</span> <span class="toc-text">1.对节流防抖的理解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%AE%9E%E7%8E%B0%E8%8A%82%E6%B5%81%E5%87%BD%E6%95%B0%E3%80%81%E9%98%B2%E6%8A%96%E5%87%BD%E6%95%B0"><span class="toc-number">3.2.</span> <span class="toc-text">2.实现节流函数、防抖函数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%9B%9E%E6%B5%81%E4%B8%8E%E9%87%8D%E7%BB%98"><span class="toc-number">4.</span> <span class="toc-text">四、回流与重绘</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%9B%9E%E6%B5%81%E4%B8%8E%E9%87%8D%E7%BB%98%E7%9A%84%E6%A6%82%E5%BF%B5%E4%BB%A5%E5%8F%8A%E8%A7%A6%E5%8F%91%E6%9D%A1%E4%BB%B6"><span class="toc-number">4.1.</span> <span class="toc-text">1.回流与重绘的概念以及触发条件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E5%9B%9E%E6%B5%81%E4%B8%8E%E9%87%8D%E7%BB%98"><span class="toc-number">4.2.</span> <span class="toc-text">2.如何避免回流与重绘</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E5%9B%BE%E7%89%87%E4%BC%98%E5%8C%96"><span class="toc-number">5.</span> <span class="toc-text">五、图片优化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%A6%82%E4%BD%95%E5%AF%B9%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84%E5%9B%BE%E7%89%87%E8%BF%9B%E8%A1%8C%E4%BC%98%E5%8C%96"><span class="toc-number">5.1.</span> <span class="toc-text">1.如何对项目中的图片进行优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%B8%B8%E8%A7%81%E7%9A%84%E5%9B%BE%E7%89%87%E6%A0%BC%E5%BC%8F%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">5.2.</span> <span class="toc-text">2.常见的图片格式以及使用场景</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AD%E3%80%81webpack%E4%BC%98%E5%8C%96"><span class="toc-number">6.</span> <span class="toc-text">六、webpack优化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%A6%82%E4%BD%95%E7%94%A8webpack%E4%BC%98%E5%8C%96%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD"><span class="toc-number">6.1.</span> <span class="toc-text">1.如何用webpack优化前端性能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#JS%E4%BB%A3%E7%A0%81%E5%8E%8B%E7%BC%A9"><span class="toc-number">6.1.1.</span> <span class="toc-text">JS代码压缩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CSS%E4%BB%A3%E7%A0%81%E5%8E%8B%E7%BC%A9"><span class="toc-number">6.1.2.</span> <span class="toc-text">CSS代码压缩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Html%E6%96%87%E4%BB%B6%E4%BB%A3%E7%A0%81%E5%8E%8B%E7%BC%A9"><span class="toc-number">6.1.3.</span> <span class="toc-text">Html文件代码压缩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%A4%A7%E5%B0%8F%E5%8E%8B%E7%BC%A9"><span class="toc-number">6.1.4.</span> <span class="toc-text">文件大小压缩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9"><span class="toc-number">6.1.5.</span> <span class="toc-text">图片压缩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tree-Shaking"><span class="toc-number">6.1.6.</span> <span class="toc-text">Tree Shaking</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#css-tree-shaking"><span class="toc-number">6.1.7.</span> <span class="toc-text">css tree shaking</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%88%86%E7%A6%BB"><span class="toc-number">6.1.8.</span> <span class="toc-text">代码分离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E8%81%94chunk"><span class="toc-number">6.1.9.</span> <span class="toc-text">内联chunk</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%A6%82%E4%BD%95%E6%8F%90%E9%AB%98webpack%E7%9A%84%E6%9E%84%E5%BB%BA%E9%80%9F%E5%BA%A6"><span class="toc-number">6.2.</span> <span class="toc-text">2.如何提高webpack的构建速度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96loader%E9%85%8D%E7%BD%AE"><span class="toc-number">6.2.1.</span> <span class="toc-text">优化loader配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%88%E7%90%86%E4%BD%BF%E7%94%A8-resolve-extensions"><span class="toc-number">6.2.2.</span> <span class="toc-text">合理使用 resolve.extensions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96-resolve-modules"><span class="toc-number">6.2.3.</span> <span class="toc-text">优化 resolve.modules</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96-resolve-alias"><span class="toc-number">6.2.4.</span> <span class="toc-text">优化 resolve.alias</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-DLLPlugin-%E6%8F%92%E4%BB%B6"><span class="toc-number">6.2.5.</span> <span class="toc-text">使用 DLLPlugin 插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-cache-loader"><span class="toc-number">6.2.6.</span> <span class="toc-text">使用 cache-loader</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#terser-%E5%90%AF%E5%8A%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="toc-number">6.2.7.</span> <span class="toc-text">terser 启动多线程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%88%E7%90%86%E4%BD%BF%E7%94%A8-sourceMap"><span class="toc-number">6.2.8.</span> <span class="toc-text">合理使用 sourceMap</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/09/17/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title="性能优化"><img src="/img/bg1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="性能优化"/></a><div class="content"><a class="title" href="/2022/09/17/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title="性能优化">性能优化</a><time datetime="2022-09-17T15:14:52.000Z" title="发表于 2022-09-17 23:14:52">2022-09-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/17/Vue/" title="Vue"><img src="/img/bg1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Vue"/></a><div class="content"><a class="title" href="/2022/09/17/Vue/" title="Vue">Vue</a><time datetime="2022-09-17T03:45:42.000Z" title="发表于 2022-09-17 11:45:42">2022-09-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/16/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" title="计算机网络"><img src="/img/bg1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="计算机网络"/></a><div class="content"><a class="title" href="/2022/09/16/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" title="计算机网络">计算机网络</a><time datetime="2022-09-16T07:37:16.000Z" title="发表于 2022-09-16 15:37:16">2022-09-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/15/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/" title="每一个不曾起舞的日子，都是对生命的辜负。"><img src="/img/bg1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="每一个不曾起舞的日子，都是对生命的辜负。"/></a><div class="content"><a class="title" href="/2022/09/15/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/" title="每一个不曾起舞的日子，都是对生命的辜负。">每一个不曾起舞的日子，都是对生命的辜负。</a><time datetime="2022-09-15T14:57:53.000Z" title="发表于 2022-09-15 22:57:53">2022-09-15</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/bg1.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 云无月</div><div class="footer_custom_text">欢迎来到云无月の <a href="https://zzrjack.github.io/">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'HIRU9WxWExQfPi2OgFnhxbbw-gzGzoHsz',
+      appKey: 'FFQd7tJuaOqPoRSb36xW6qBX',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><div class="aplayer no-destroy" data-id="7638948053" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="random" data-preload="none" data-autoplay="false" muted></div><script src="/js/sakura.js" async></script><script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0" async></script><script src="/js/weather.js" async></script><script src="https://cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js" async></script><script src="/js/title.js" async></script><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
