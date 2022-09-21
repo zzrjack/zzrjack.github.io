@@ -1,32 +1,30 @@
 /* 页脚透明 */
-#footer{
-  background: transparent!important;
+#footer {
+  background: transparent !important;
 }
 /* 页脚黑色透明玻璃效果移除 */
-#footer::before{
-    background: transparent!important;
-  }
+#footer::before {
+  background: transparent !important;
+}
 /* 头图透明 */
-#page-header{
-  background: transparent!important;
+#page-header {
+  background: transparent !important;
 }
 /* 头图遮罩层透明 */
-#page-header::before{
-  background: transparent!important;
-  }
+#page-header::before {
+  background: transparent !important;
+}
 /*top-img黑色透明玻璃效果移除，不建议加，除非你执着于完全一图流或者背景图对比色明显 */
 #page-header.post-bg:before {
-  background-color: transparent!important;
+  background-color: transparent !important;
 }
 /*夜间模式伪类遮罩层透明*/
-[data-theme="dark"]
-  #footer::before{
-      background: transparent!important;
-    }
-[data-theme="dark"]
-  #page-header::before{
-    background: transparent!important;
-    }
+[data-theme="dark"] #footer::before {
+  background: transparent !important;
+}
+[data-theme="dark"] #page-header::before {
+  background: transparent !important;
+}
 .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
   left: -66px !important;
   /* 默认情况下缩进左侧66px，只留一点箭头部分 */
@@ -50,14 +48,14 @@
 ::-webkit-scrollbar-thumb {
   background-color: #49b1f5 !important;
   background-image: -webkit-linear-gradient(
-	45deg,
-	rgba(255, 255, 255, 0.4) 25%,
-	transparent 25%,
-	transparent 50%,
-	rgba(255, 255, 255, 0.4) 50%,
-	rgba(255, 255, 255, 0.4) 75%,
-	transparent 75%,
-	transparent
+    45deg,
+    rgba(255, 255, 255, 0.4) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.4) 75%,
+    transparent 75%,
+    transparent
   ) !important;
   border-radius: 2em;
 }
