@@ -46,85 +46,131 @@ class myPromise {
   }
   //then 为创建实例后调用then方法可以传入两个参数。
   //这两个参数都是函数，一个是当状态为fulfilled 成功 时执行的代码，另一个是当状态为 rejected 拒绝 时执行的代码。
-  //设置为onFULFILLED,onREJECTED
-  //参数校验，如果传入的参数不是函数就直接忽略
-  //注意onREJECTED分支是错误分支所以传入的不是函数可以抛出错误
-  then(onFULFILLED, onREJECTED) {
-    onFULFILLED = typeof onFULFILLED === "function" ? onFULFILLED : (value) => value;
-    onREJECTED =
-      typeof onREJECTED === "function"
-        ? onREJECTED
-        : (reason) => {
-            throw reason;
-          };
-    //当then里面判断到 pending 待定状态时我们要干什么？
-    //此时resolve或者reject还没获取到任何值，所以我们得让then里的函数稍后再执行，等resolve执行了以后，再执行then
-    if (this.status === myPromise.PENDING) {
+  //设置为onFulfilled,onRejected
+  then(onFulfilled, onRejected) {
+    let promise2 = new myPromise((resolve, reject) => {
+      //如果当前实例的 status状态属性为 FUFILLED 成功 的话
+      //执行传进来的 onFulfiled 函数，并且为onFulfiled函数传入前面保留的status属性值：
+      if (this.status === myPromise.FULFILLED) {
+        setTimeout(() => {
+          try {
+            //如果 onFulfilled 不是函数且 promise1 成功执行， promise2 必须成功执行并返回相同的值
+            if (typeof onFulfilled !== "function") {
+              resolve(this.result);
+            } else {
+              let x = onFulfilled(this.result);
+              resolvePromise(promise2, x, resolve, reject);
+            }
+          } catch (e) {
+            //如果 onFulfilled 或者 onRejected 抛出一个异常 e ，则 promise2 必须拒绝执行，并返回拒因 e
+            reject(e);
+          }
+        });
+      }
+      //同理可得rejected
+      else if (this.status === myPromise.REJECTED) {
+        setTimeout(() => {
+          try {
+            if (typeof onRejected !== "function") {
+              reject(this.result);
+            } else {
+              let x = onRejected(this.result);
+              resolvePromise(promise2, x, resolve, reject);
+            }
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+      //当then里面判断到 pending 待定状态时
+      //resolve或者reject还没获取到任何值，所以我们得让then里的函数稍后再执行，等resolve执行了以后，再执行then
       //确保onFulfilled和onRejected方法异步执行
       //应该在then方法被调用的那一轮事件循环之后的新执行栈中执行。
       //因此，在保存成功和失败回调时也要添加 setTimeout
-      this.onFulfilledCallbacks.push(() => {
-        setTimeout(() => {
-          onFULFILLED(this.result);
+      else if (this.status === myPromise.PENDING) {
+        this.onFulfilledCallbacks.push(() => {
+          setTimeout(() => {
+            try {
+              if (typeof onFulfilled !== "function") {
+                resolve(this.result);
+              } else {
+                let x = onFulfilled(this.result);
+                resolvePromise(promise2, x, resolve, reject);
+              }
+            } catch (error) {
+              reject(error);
+            }
+          });
         });
-      });
-      this.onRejectedCallbacks.push(() => {
-        setTimeout(() => {
-          onREJECTED(this.result);
+        this.onRejectedCallbacks.push(() => {
+          setTimeout(() => {
+            try {
+              if (typeof onRejected !== "function") {
+                reject(this.result);
+              } else {
+                let x = onRejected(this.result);
+                resolvePromise(promise2, x, resolve, reject);
+              }
+            } catch (error) {
+              reject(error);
+            }
+          });
         });
-      });
-    }
-    //如果当前实例的 status状态属性为 FUFILLED 成功 的话
-    //执行传进来的 onFUFILLED 函数，并且为onFULFILLED函数传入前面保留的status属性值：
-    if (this.status === myPromise.FULFILLED) {
-      setTimeout(() => {
-        onFULFILLED(this.result);
-      });
-    }
-    //同理可得rejected
-    if (this.status === myPromise.REJECTED) {
-      setTimeout(() => {
-        onREJECTED(this.result);
-      });
-    }
+      }
+    });
+    return promise2;
   }
 }
 //------------------------------------------------------------------------------------------------------
-console.log(1);
-let promise1 = new myPromise((resolve, reject) => {
-  console.log(2);
-  setTimeout(() => {
-    console.log("A", promise1.status);
-    resolve("这次一定");
-    console.log("B", promise1.status);
-    console.log(4);
-  });
-});
-promise1.then(
-  (result) => {
-    console.log("C", promise1.status);
-    console.log("fulfilled:", result);
-  },
-  (reason) => {
-    console.log("rejected:", reason);
+//promise解决函数
+function resolvePromise(promise2, x, resolve, reject) {
+  if (x === promise2) {
+    throw new TypeError("Chaining cycle detected for promise");
   }
-);
-console.log(3);
-
-const promise = new myPromise((resolve, reject) => {
-  setTimeout(() => {
-    resolve("success");
-  }, 2000);
-});
-promise.then((value) => {
-  console.log(1);
-  console.log("resolve", value);
-});
-promise.then((value) => {
-  console.log(2);
-  console.log("resolve", value);
-});
-promise.then((value) => {
-  console.log(3);
-  console.log("resolve", value);
-});
+  if (x instanceof myPromise) {
+    //如果 x 为 Promise ，则使 promise2 接受 x 的状态也就是继续执行x，如果执行的时候拿到一个y，还要继续解析y
+    x.then((y) => {
+      resolvePromise(promise2, y, resolve, reject);
+    }, reject);
+  } else if (x !== null && (typeof x === "object" || typeof x === "function")) {
+    //如果x是函数或者对象
+    try {
+      var then = x.then;
+    } catch (error) {
+      return reject(error);
+    }
+    //如果 resolvePromise 和 rejectPromise 均被调用，或者被同一参数调用了多次，则优先采用首次调用并忽略剩下的调用
+    if (typeof then === "function") {
+      let called = false;
+      try {
+        then.call(
+          x,
+          //如果 resolvePromise 以值 y 为参数被调用，则运行 [[Resolve]](promise, y)
+          (y) => {
+            if (called) {
+              return;
+            }
+            called = true;
+            resolvePromise(promise2, y, resolve, reject);
+          },
+          //如果 rejectPromise 以据因 r 为参数被调用，则以据因 r 拒绝 promise
+          (r) => {
+            if (called) return;
+            called = true;
+            reject(r);
+          }
+        );
+      } catch (error) {
+        if (called) return;
+        called = true;
+        reject(error);
+      }
+    } else {
+      //如果 then 不是函数，以 x 为参数执行 promise
+      resolve(x);
+    }
+  } else {
+    //如果 x 不为对象或者函数，以 x 为参数执行 promise
+    return resolve(x);
+  }
+}
